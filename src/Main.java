@@ -14,7 +14,7 @@ public class Main {
         BufferedImage image3;
         BufferedImage image4;
         MegatronGraphics mega = new MegatronGraphics();
-        Compress compress = new Compress();
+        CompressImg compress = new CompressImg();
         GotGraphics gotGraphics = new GotGraphics();
         try {
 
