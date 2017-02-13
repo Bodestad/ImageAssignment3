@@ -15,6 +15,13 @@ public class GotGraphics {
 
     public final static class InvalidGotFileException extends IOException { }
 
+
+    /**
+     * Takes a BufferedImage and a filename, generates a GotGraphics file.
+     * @param img
+     * @param fnam
+     * @throws IOException
+     */
     public void write(BufferedImage img, String fnam) throws IOException {
         int width  = img.getWidth();
         int height = img.getHeight();
@@ -35,10 +42,16 @@ public class GotGraphics {
         out.close();
     }
 
+    /**
+     * Takes a filename, generates and returns a BufferedImage from a GotGraphics file.
+     * @param fnam
+     * @return
+     * @throws IOException
+     */
     public BufferedImage read(String fnam) throws IOException {
         InputStream in = new FileInputStream(fnam);
 
-        // Check magic value.
+        // Check header.
         for (int i = 0; i < magic.length; i++) {
             if (in.read() != magic[i]) { throw new GotGraphics.InvalidGotFileException(); }
         }
@@ -61,7 +74,7 @@ public class GotGraphics {
         return img;
     }
 
-    /** Writes an int as 4 bytes, big endian. */
+    /** Writes an int as 4 bytes, big endian. (Copied from MegatronGraphics) */
     private static void write4bytes(int v, OutputStream out) throws IOException {
         out.write(v>>>3*8);
         out.write(v>>>2*8 & 255);
@@ -69,7 +82,7 @@ public class GotGraphics {
         out.write(v       & 255);
     }
 
-    /** Reads an int as 4 bytes, big endian. */
+    /** Reads an int as 4 bytes, big endian. (Copied from MegatronGraphics) */
     private static int read4bytes(InputStream in) throws IOException {
         int b, v;
         b = in.read(); if (b < 0) { throw new EOFException(); }
