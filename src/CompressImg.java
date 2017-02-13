@@ -6,38 +6,40 @@ import java.io.IOException;
 
 /**
  * Created by gustavbodestad on 2017-02-03.
+ * The FLoyd-Steinberg algorithm was found on Wikipedia.
+ * https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering
  */
 public class CompressImg {
 
     public BufferedImage dithering(BufferedImage img) {
-        C3[] palette = new C3[] {
-                new C3(  0,   0,   0),
-                new C3(  0,   0, 255),
-                new C3(  0, 255,   0),
-                new C3(  0, 255, 255),
-                new C3(255,   0,   0),
-                new C3(255,   0, 255),
-                new C3(255, 255,   0),
-                new C3(255, 255, 255)
+        Palette[] palette = new Palette[] {
+                new Palette(  0,   0,   0),
+                new Palette(  0,   0, 255),
+                new Palette(  0, 255,   0),
+                new Palette(  0, 255, 255),
+                new Palette(255,   0,   0),
+                new Palette(255,   0, 255),
+                new Palette(255, 255,   0),
+                new Palette(255, 255, 255)
         };
 
         int w = img.getWidth();
         int h = img.getHeight();
 
-        C3[][] d = new C3[h][w];
+        Palette[][] d = new Palette[h][w];
 
         for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++)
-                d[y][x] = new C3(img.getRGB(x, y));
+                d[y][x] = new Palette(img.getRGB(x, y));
 
         for (int y = 0; y < img.getHeight(); y++) {
             for (int x = 0; x < img.getWidth(); x++) {
 
-                C3 oldColor = d[y][x];
-                C3 newColor = findClosestPaletteColor(oldColor, palette);
+                Palette oldColor = d[y][x];
+                Palette newColor = findClosestPaletteColor(oldColor, palette);
                 img.setRGB(x, y, newColor.toColor().getRGB());
 
-                C3 err = oldColor.sub(newColor);
+                Palette err = oldColor.sub(newColor);
 
                 if (x+1 < w)         d[y  ][x+1] = d[y  ][x+1].add(err.mul(7./16));
                 if (x-1>=0 && y+1<h) d[y+1][x-1] = d[y+1][x-1].add(err.mul(3./16));
@@ -49,41 +51,41 @@ public class CompressImg {
         return img;
     }
 
-    private static C3 findClosestPaletteColor(C3 c, C3[] palette) {
-        C3 closest = palette[0];
+    private static Palette findClosestPaletteColor(Palette c, Palette[] palette) {
+        Palette closest = palette[0];
 
-        for (C3 n : palette)
+        for (Palette n : palette)
             if (n.diff(c) < closest.diff(c))
                 closest = n;
 
         return closest;
     }
 
-    static class C3 {
+    static class Palette {
         int r, g, b;
 
-        public C3(int c) {
+        public Palette(int c) {
             Color color = new Color(c);
             this.r = color.getRed();
             this.g = color.getGreen();
             this.b = color.getBlue();
         }
-        public C3(int r, int g, int b) {
+        public Palette(int r, int g, int b) {
             this.r = r;
             this.g = g;
             this.b = b;
         }
 
-        public C3 add(C3 o) {
-            return new C3(r + o.r, g + o.g, b + o.b);
+        public Palette add(Palette o) {
+            return new Palette(r + o.r, g + o.g, b + o.b);
         }
-        public C3 sub(C3 o) {
-            return new C3(r - o.r, g - o.g, b - o.b);
+        public Palette sub(Palette o) {
+            return new Palette(r - o.r, g - o.g, b - o.b);
         }
-        public C3 mul(double d) {
-            return new C3((int) (d * r), (int) (d * g), (int) (d * b));
+        public Palette mul(double d) {
+            return new Palette((int) (d * r), (int) (d * g), (int) (d * b));
         }
-        public int diff(C3 o) {
+        public int diff(Palette o) {
             return Math.abs(r - o.r) +  Math.abs(g - o.g) +  Math.abs(b - o.b);
         }
 
