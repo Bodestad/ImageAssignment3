@@ -11,6 +11,12 @@ import java.io.IOException;
  */
 public class CompressImg {
 
+    /**
+     * Creates a new color palette by using the inner Palette class.
+     * Takes Buffered image and returns compressed image.
+     * @param img
+     * @return
+     */
     public BufferedImage dithering(BufferedImage img) {
         Palette[] palette = new Palette[] {
                 new Palette(  0,   0,   0),
@@ -23,6 +29,9 @@ public class CompressImg {
                 new Palette(255, 255, 255)
         };
 
+        /**
+         * Sets size.
+         */
         int w = img.getWidth();
         int h = img.getHeight();
 
@@ -32,6 +41,9 @@ public class CompressImg {
             for (int x = 0; x < w; x++)
                 d[y][x] = new Palette(img.getRGB(x, y));
 
+        /**
+         * Replaces the old color pixel with a new value by using the color palette.
+         */
         for (int y = 0; y < img.getHeight(); y++) {
             for (int x = 0; x < img.getWidth(); x++) {
 
@@ -51,6 +63,12 @@ public class CompressImg {
         return img;
     }
 
+    /**
+     * Fins closest color in the palette.
+     * @param c
+     * @param palette
+     * @return
+     */
     private static Palette findClosestPaletteColor(Palette c, Palette[] palette) {
         Palette closest = palette[0];
 
@@ -61,6 +79,9 @@ public class CompressImg {
         return closest;
     }
 
+    /**
+     * Class is used for creating a new color palette.
+     */
     static class Palette {
         int r, g, b;
 
